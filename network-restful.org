@@ -1,0 +1,32 @@
+* Emacs elisp
+#+begin_src emacs-lisp :results output
+(request
+  "https://api.sunrisesunset.io/json"
+  :sync t
+  :type "POST"
+  :params '(("lat" . "30.16") ("lng" . "120.12"))
+  :parser 'json-read
+  :complete (cl-function
+             (lambda (&key response &allow-other-keys)
+               (prin1 (request-response-data response)))))
+#+end_src
+
+#+RESULTS:
+: ((results (date . "2024-02-17") (sunrise . "6:40:13 AM") (sunset . "5:49:51 PM") (first_light . "5:19:45 AM") (last_light . "7:10:20 PM") (dawn . "6:15:45 AM") (dusk . "6:14:19 PM") (solar_noon . "12:15:02 PM") (golden_hour . "5:16:59 PM") (day_length . "11:09:37") (timezone . "Asia/Shanghai") (utc_offset . 480)) (status . "OK"))
+
+* Babashka
+#+begin_src bb :results output
+(require '[babashka.http-client :as http])
+(let [resp (http/post
+            "https://api.sunrisesunset.io/json"
+            {:headers {:Content-Type "application/json"}
+             :query-params {"lat" "30.16"
+                            "lng" "120.12"}})]
+  (-> resp
+      :body
+      json/decode
+      (get "results")))
+#+end_src
+
+#+RESULTS:
+: {"solar_noon" "12:15:02 PM", "timezone" "Asia/Shanghai", "dusk" "6:14:19 PM", "utc_offset" 480, "last_light" "7:10:20 PM", "dawn" "6:15:45 AM", "golden_hour" "5:16:59 PM", "sunrise" "6:40:13 AM", "sunset" "5:49:51 PM", "first_light" "5:19:45 AM", "date" "2024-02-17", "day_length" "11:09:37"}
