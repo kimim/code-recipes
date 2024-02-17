@@ -1,0 +1,76 @@
+* Emacs Lisp
+#+begin_src emacs-lisp :exports both
+(setq in-string ":drawio \"bonjour.drawio\" :output \"bonjour.svg\"")
+(setq from "drawio")
+(setq to "DRAWIO")
+(string-replace from to in-string)
+#+end_src
+
+#+RESULTS:
+: :DRAWIO "bonjour.DRAWIO" :output "bonjour.svg"
+
+* Clojure/Babashka
+#+begin_src bb :exports both
+(def in-string ":drawio \"bonjour.drawio\" :output \"bonjour.svg\"")
+(def from "drawio")
+(def to "DRAWIO")
+(str/replace in-string from to)
+#+end_src
+
+#+RESULTS:
+: :DRAWIO "bonjour.DRAWIO" :output "bonjour.svg"
+
+* C
+#+begin_src C :exports both
+#include <string.h>
+#include <stdio.h>
+
+char *strrpl(char *str, char *from, char *to){
+    char temp[strlen(str)];
+    memset(temp, 0, sizeof(temp));
+    for (int i = 0; i < strlen(str);) {
+        if(!strncmp(str+i, from, strlen(from))){
+            strcat(temp, to);
+            i += strlen(from);
+        } else {
+            strncat(temp, str + i, 1);
+            i++;
+        }
+    }
+    strcpy(str, temp);
+    return str;
+}
+int main() {
+    char in[] = ":drawio \"bonjour.drawio\" :output \"bonjour.svg\"";
+    printf("%s\n", strrpl(in, "drawio", "DRAWIO"));
+}
+#+end_src
+
+#+RESULTS:
+: :DRAWIO "bonjour.DRAWIO" :output "bonjour.svg"
+
+* C++
+#+header: :flags -std=c++20
+#+header: :namespaces std :includes  <iostream> <vector> <algorithm>
+#+header: :exports both :eval no-export :results output
+#+begin_src C++ :noweb strip-export
+string in = ":drawio \"bonjour.drawio\" :output \"bonjour.svg\"";
+string from = "drawio";
+string to = " e";
+std::string::size_type pos = 0;
+while((pos = in.find(from)) != std::string::npos)
+    in.replace(pos, from.length(), to);
+cout << in;
+#+end_src
+
+#+RESULTS:
+: :DRAWIO "bonjour.DRAWIO" :output "bonjour.svg"
+
+* Rust
+#+begin_src rust :exports both
+let s = ":drawio \"bonjour.drawio\" :output \"bonjour.svg\"";
+println!("{}", s.replace("drawio", "DRAWIO"));
+#+end_src
+
+#+RESULTS:
+: :DRAWIO "bonjour.DRAWIO" :output "bonjour.svg"
